@@ -3,6 +3,8 @@ const connection = require('../database/db')
 
 function index(req, res) {
 
+
+
     // const tags = req.query.tags;
 
     // let filteredTags = posts
@@ -16,6 +18,22 @@ function index(req, res) {
 }
 
 function show(req, res) {
+
+    const id = req.params.id
+
+    const postSql = 'SELECT * FROM posts WHERE id = ?'
+    const tagsSql = 'SELECT tags.label FROM tags JOIN post_tag ON post_tag.tag_id = tags.id WHERE post_tag.post_id = ?'
+    connection.query(postSql, [id], (err, results) => {
+        if (err) return res.status(500).json({ err: true, message: err.message })
+        if (results.length === 0) return res.status(404).json({ err: true, message: err.message })
+        // res.json(results[0])
+        const post = results[0]
+        connection.query(tagsSql, [id], (err, results) => {
+            if (err) return res.status(500).json({ err: true, message: err.message })
+            post.tags = results
+            res.json(post)
+        })
+    })
 
     // const id = Number(req.params.id)
     // const post = posts.find((post) => (id === post.id))
@@ -77,6 +95,16 @@ function modify(req, res) {
 }
 
 function destroy(req, res) {
+
+    const { id } = req.params;
+    console.log(req.params);
+
+
+    connection.query('DELETE FROM posts WHERE id = ?', [id], (err) => {
+        if (err) return res.status(500).json({ err: true, message: err.message })
+        res.sendStatus(204)
+    })
+
     // const id = Number(req.params.id)
     // const post = posts.find((post) => (id === post.id))
 
