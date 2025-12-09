@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3001
 const connection = require('./database/db')
+const postsRouter = require('./routers/posts')
 
 app.use(express.static('public'))
 
@@ -22,3 +23,5 @@ app.get('/api/posts', (req, res) => {
         res.json(response)
     })
 })
+
+app.use('/api/posts', postsRouter)
